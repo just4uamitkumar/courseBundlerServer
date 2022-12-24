@@ -39,11 +39,8 @@ export const register = catchAsyncError(async (req, res, next) => {
 export const login = catchAsyncError(async (req, res, next) => {
     const { email, password } = req.body;
 
-    if (!email)
-        return next(new ErrorHandler("Please enter all field email", 400));
-
-    if (!password)
-        return next(new ErrorHandler("Please enter all field password", 400));
+    if (!email || !password)
+        return next(new ErrorHandler("Please enter all field", 400));
 
     const user = await User.findOne({ email }).select("+password");
 
@@ -63,7 +60,7 @@ export const logout = catchAsyncError(async (req, res, next) => {
         .cookie("token", null, {
             expires: new Date(Date.now()),
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: "none",
         })
         .json({
