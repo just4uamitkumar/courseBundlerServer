@@ -6,7 +6,6 @@ import cloudinary from "cloudinary";
 import { Stats } from "../models/Stats.js";
 
 export const getAllCourses = catchAsyncError(async (req, res, next) => {
-
     const keyword = req.query.keyword || "";
     const category = req.query.category || "";
 
@@ -16,7 +15,7 @@ export const getAllCourses = catchAsyncError(async (req, res, next) => {
             $options: "i",
         },
         category: {
-            $regex: keyword,
+            $regex: category,
             $options: "i",
         }
     }).select("-lectures");
