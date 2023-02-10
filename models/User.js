@@ -5,9 +5,14 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 
 const schema = new mongoose.Schema({
-  name: {
+  firstName: {
     type: String,
-    required: [true, "Please enter your name"],
+    required: [true, "Please enter your first name"],
+    minLength: [3, "First Name must be at least 3 characters"],
+  },
+  lastName: {
+    type: String,
+    default: null,
   },
   email: {
     type: String,
@@ -19,12 +24,39 @@ const schema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please enter your password"],
-    minLength: [6, "Password must be at least 6 characters"],
+    minLength: [8, "Password must be at least 6 characters"],
     select: false,
   },
+
+  mobile: {
+    type: Number,
+    default: null,
+  },
+
+  address: {
+    addressLine1: {
+      type: String,
+    },
+    addressLine2: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    zipCode: {
+      type: Number,
+    },
+    country: {
+      type: String,
+    }
+  },
+
   role: {
     type: String,
-    enum: ["admin", "user"],
+    enum: ["superAdmin", "admin", "premiumUser", "user" ],
     default: "user",
   },
 

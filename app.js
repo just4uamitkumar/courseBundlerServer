@@ -10,7 +10,6 @@ import user from "./routes/userRoutes.js";
 import payment from "./routes/paymentRoutes.js";
 import other from "./routes/otherRoutes.js";
 
-
 config({
     path: "./config/config.env",
 });
@@ -32,6 +31,7 @@ app.use(
     })
 );
 
+
 // Using Routes
 app.use("/api/v1", course);
 app.use("/api/v1", user);
@@ -42,6 +42,7 @@ export default app;
 
 app.get("/", (req, res) =>
     res.send(
+      console.log('Cookies: ', req.cookies)
         `<h1>Site is Working. click <a href=${process.env.FRONTEND_URL}>here</a> to visit frontend.</h1>`
     )
 );
