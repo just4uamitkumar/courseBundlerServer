@@ -10,10 +10,11 @@ import getDataUri from "../utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
-    const { name, email, password } = req.body;
+
+    const { firstName, lastName, email, password } = req.body;
     const file = req.file;
 
-    if (!name || !email || !password || !file)
+    if (!firstName || !email || !password || !file)
         return next(new ErrorHandler("Please enter all field", 400));
 
     let user = await User.findOne({ email });
@@ -24,7 +25,8 @@ export const register = catchAsyncError(async (req, res, next) => {
     const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
 
     user = await User.create({
-        name,
+        firstName,
+        lastName,
         email,
         password,
         avatar: {
@@ -37,45 +39,45 @@ export const register = catchAsyncError(async (req, res, next) => {
 });
 
 export const login = catchAsyncError(async (req, res, next) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    if (!email || !password)
-        return next(new ErrorHandler("Please enter all field", 400));
+  if (!email || !password)
+    return next(new ErrorHandler("Please enter all field", 400));
 
-    const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
 
-    if (!user) return next(new ErrorHandler("Incorrect Email or Password", 401));
+  if (!user) return next(new ErrorHandler("Incorrect Email or Password", 401));
 
-    const isMatch = await user.comparePassword(password);
+  const isMatch = await user.comparePassword(password);
 
-    if (!isMatch)
-        return next(new ErrorHandler("Incorrect Email or Password", 401));
+  if (!isMatch)
+    return next(new ErrorHandler("Incorrect Email or Password", 401));
 
-    sendToken(res, user, `Welcome back, ${user.name}`, 200);
+  sendToken(res, user, `Welcome back, ${user.email}`, 200);
 });
 
 export const logout = catchAsyncError(async (req, res, next) => {
-    res
-        .status(200)
-        .cookie("token", null, {
-            expires: new Date(Date.now()),
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-        })
-        .json({
-            success: true,
-            message: "Logged Out Successfully",
-        });
+  res
+    .status(200)
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    })
+    .json({
+      success: true,
+      message: "Logged Out Successfully",
+    });
 });
 
 export const getMyProfile = catchAsyncError(async (req, res, next) => {
-    const user = await User.findById(req.user._id);
+  const user = await User.findById(req.user._id);
 
-    res.status(200).json({
-        success: true,
-        user,
-    });
+  res.status(200).json({
+    success: true,
+    user,
+  });
 });
 
 export const changePassword = catchAsyncError(async (req, res, next) => {
@@ -100,19 +102,19 @@ export const changePassword = catchAsyncError(async (req, res, next) => {
 });
 
 export const updateProfile = catchAsyncError(async (req, res, next) => {
-    const { name, email } = req.body;
-
+    const { firstName, lastName, mobile, email } = req.body;
     const user = await User.findById(req.user._id);
 
-    if (name) user.name = name;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (mobile) user.mobile = mobile;
     if (email) user.email = email;
-
     await user.save();
-
     res.status(200).json({
         success: true,
         message: "Profile Updated Successfully",
     });
+
 });
 
 export const updateprofilepicture = catchAsyncError(async (req, res, next) => {
@@ -196,7 +198,6 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
     const user = await User.findById(req.user._id);
 
     const course = await Course.findById(req.body.id);
-
     if (!course) return next(new ErrorHandler("Invalid Course Id", 404));
 
     const itemExist = user.playlist.find((item) => {
@@ -280,22 +281,18 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
 
 export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
     const user = await User.findById(req.user._id);
-
     await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-
     // Cancel Subscription
 
     await user.remove();
 
-    res
-        .status(200)
-        .cookie("token", null, {
-            expires: new Date(Date.now()),
-        })
-        .json({
-            success: true,
-            message: "User Deleted Successfully",
-        });
+    res.status(200).cookie("token", null, {
+        expires: new Date(Date.now()),
+    })
+    .json({
+        success: true,
+        message: "User Deleted Successfully",
+    });
 });
 
 User.watch().on("change", async () => {
@@ -307,4 +304,4 @@ User.watch().on("change", async () => {
     stats[0].createdAt = new Date(Date.now());
 
     await stats[0].save();
-});
+// });
