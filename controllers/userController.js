@@ -304,4 +304,4 @@ User.watch().on("change", async () => {
     stats[0].createdAt = new Date(Date.now());
 
     await stats[0].save();
-// });
+});
