@@ -6,6 +6,8 @@ import cors from "cors";
 
 // Importing Routes
 import course from "./routes/courseRoutes.js";
+import student from "./routes/studentRoutes.js";
+import education from "./routes/educationRoutes.js";
 import user from "./routes/userRoutes.js";
 import payment from "./routes/paymentRoutes.js";
 import other from "./routes/otherRoutes.js";
@@ -22,6 +24,7 @@ app.use(
         extended: true,
     })
 );
+
 app.use(cookieParser());
 app.use(
     cors({
@@ -35,7 +38,9 @@ app.use(
 // Using Routes
 app.use("/api/v1", course);
 app.use("/api/v1", user);
+app.use("/api/v1", student);
 app.use("/api/v1", payment);
+app.use("/api/v1", education);
 app.use("/api/v1", other);
 
 export default app;
